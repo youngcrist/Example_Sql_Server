@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<div>
+    <div class="text-center">
+        <h1 class="display-4">Welcome to your system</h1>
+    </div>
+    <div>
+        <div class="mt-4 row">
+            <h4>Invoice</h4>
+            <a href="/Invoice" class="ml-3 btn btn-primary">Add</a>
+        </div>
+        <div class="mt-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="col-4">InvoiceID</th>
+                        <th class="col-4">Customer</th>
+                        <th class="col-4">Total ITBIS</th>
+                        <th class="col-4">subTotal</th>
+                        <th class="col-4">Total</th>
+                        <th class="col-4"></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@await Html.PartialAsync("_GetDetailInvoice")
+
+@section Scripts{
+    <script>
+        $(function () {
+            $.get("Invoice/ListInvoice").done(function (res) {
+
+                var object = '';
+                $.each(res, function (index, item) {
+                    object += '<tr>';
+                    object += '<td scope="row">' + item.id + '</td>';
+                    object += '<td>' + item.custName + '</td>';
+                    object += '<td>' + item.totalItbis + '</td>';
+                    object += '<td>' + item.subTotal + '</td>';
+                    object += '<td>' + item.total + '</td>';
+                    object += '<td><button class="btn btn-warning" onclick="getDetailInvoice(' + item.id + ')">Detail</button></td>';
+                    object += '</tr>';
+                });
+
+                $("#tbody").html(object);
+            });
+
+        });
+        function getDetailInvoice(id) {
+
+            $.get("Invoice/GetDetail", { id }).done(function (res) {
+
+                $('#title').html('<h5>Invoice ID: '+id+'</h5>');
+
+                var object = '';
+                $.each(res, function (index, item) {
+                    object += '<tr>'
+                    object += '<td>' + item.id + '</td>';
+                    object += '<td>' + item.qty + '</td>';
+                    object += '<td>' + item.price + '</td>';
+                    object += '<td>' + item.totalItbis + '</td>';
+                    object += '<td>' + item.subTotal + '</td>';
+                    object += '<td>' + item.total + '</td>';
+                    object += '</tr>'
+                });
+
+                $('#tbodyD').html(object);
+                $('#DetailModal').modal('show');
+            });
+        }
+    </script>
+ }
+

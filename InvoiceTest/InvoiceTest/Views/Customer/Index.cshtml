@@ -1,0 +1,99 @@
+﻿
+
+<div class="container">
+    <div class="mt-4 row">
+        <div>
+            <h4>Customer</h4>
+        </div>
+        <div>
+            <button class="ml-3 btn btn-primary" id="btnAddCustomer" onclick="updateCustomer(0)" >Add</button>
+        </div>
+    </div>
+    <div class="mt-3 col-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="col-4">ID</th>
+                    <th class="col-4">Name</th>
+                    <th class="col-4">Address</th>
+                    <th class="col-4">Status</th>
+                    <th class="col-4">Type</th>
+                    <th class="col-4"></th>
+                    <th class="col-4"></th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+</div>
+@await Html.PartialAsync("_AddCustomer")
+
+@section Scripts{
+    <script>
+        $(function () {
+
+            $.get("Customer/ListCustomers").done(function (res) {
+
+                var object = '';
+                $.each(res, function (index, item) {
+                    object += '<tr>';
+                    object += '<td scope="row">' + item.id + '</td>';
+                    object += '<td>' + item.custName + '</td>';
+                    object += '<td>' + item.address + '</td>';
+                    object += '<td>' + (item.status == 1 ? 'Active' : 'Inactive') + '</td>';
+                    object += '<td>' + item.customerType + '</td>';
+                    object += '<td><button class="btn btn-warning" onclick="updateCustomer(' + item.id + ')">Update</button></td>';
+                    object += '<td><a href="Customer/DeleteCustomer/' + item.id + '" class="btn btn-danger">Delete</a></td>';
+                    object += '</tr>';
+                });
+
+                $("#tbody").html(object);
+            });
+            //$('#btnAddCustomer').click(function () {
+            //    $('#EditModal').modal('show');
+            //});
+
+            $('#form').submit(function () {
+
+
+                const form = {
+                    id: $('#id').val(),
+                    custName: $('#name').val(),
+                    adress: $('#address').val(),
+                    status: $('#status option:selected').val(),
+                    customerTypeId: $('#type :selected').val()
+                }
+                $.post("Customer/SaveChangeCustomer", form)
+            });
+
+        });
+
+        function updateCustomer(id) {
+
+            if (id !== 0) {
+                $.get("Customer/GetCustomer", { id }).done(res => {
+                    $('#EditModal').modal('show');
+                    $('#id').val(res.id)
+                    $('#name').val(res.custName);
+                    $('#address').val(res.adress);
+                    $('#status').val(res.status == true ? 'true' : 'false');
+                    $('#type').val(res.customerTypeId);
+
+                });
+            } else {
+                $('#EditModal').modal('show');
+                $('#id').val(0)
+                $('#name').val('');
+                $('#address').val('');
+                $('#status').val();
+                $('#type').val();
+                
+            }
+            
+        }
+       
+    </script>
+}
+
+
+

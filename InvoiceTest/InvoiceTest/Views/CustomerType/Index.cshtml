@@ -1,0 +1,83 @@
+﻿
+<div class="Container">
+    <div class="mt-4 row">
+        <div>
+            <h4>Customer type</h4>
+        </div>
+        <dov>
+            <button class="ml-3 btn btn-primary" onclick="updateCustomerType(0)">Add</button>
+        </dov>
+    </div>
+    <div class="mt-3 col-12">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="col-3">ID</th>
+                    <th class="col">Description</th>
+                    <th class="col"></th>
+                    <th class="col"></th>
+                </tr>
+            </thead>
+            <tbody id="tblBody"></tbody>
+        </table>
+    </div>
+</div>
+@await Html.PartialAsync("_AddCustomerType") 
+@section Scripts{
+    <script>
+        $(function () {
+            var message = ''
+            $.get("CustomerType/ListCustomerType").done(function (res) {
+
+                var object = '';
+                $.each(res, function (index, item) {
+                    object += '<tr>';
+                    object += '<td scope="row">' + item.id + '</td>';
+                    object += '<td>' + item.description + '</td>';
+                    object += '<td><button class="btn btn-warning" onclick="updateCustomerType(' + item.id + ')">Update</button></td>';
+                    object += '<td><a href="CustomerType/DeleteCustomerType/' + item.id + '" class="btn btn-danger">Delete</a></td>';
+                    object += '</tr>';
+                });
+
+                $("#tblBody").html(object);
+            });
+
+            //$('#dtnAddCustomerType').click(function () {
+            //    $('#EditTypeModal').modal('show')
+            //
+            //});
+            
+
+            $('#form').submit(function () {
+                var form = {
+                    id: $('#id').val(),
+                    description: $('#description').val()
+                }
+
+                if (form.description == '') {
+                    message = '<label style="color:red">please complete the field.</label>'
+                    $('.errorField').html(message);
+                } else {
+                    $.post("CustomerType/SaveChangeCustomerType", form)
+                }
+               
+            });
+        });
+        function updateCustomerType(id) {
+            if (id !== 0) {
+                $.get("CustomerType/GetCustomerType", { id }).done(res => {
+                    $('#EditTypeModal').modal('show');
+                    $('#id').val(res.id)
+                    $('#description').val(res.description)
+                });
+            } else {
+                $('#EditTypeModal').modal('show');
+
+                $('#id').val(0)
+                $('#description').val('')
+            }
+
+            
+        }
+    </script>
+}
